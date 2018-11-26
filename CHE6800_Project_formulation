@@ -1,0 +1,73 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""
+Created on Sat Nov 17 13:13:04 2018
+
+@author: michaeleaton
+"""
+
+import numpy as np 
+import matplotlib.pyplot as plt
+
+#***************Define functions*********************************************
+# The function definitions are for getting the coordinate grid, the Intensity map
+# for one light, and then the intensity map for a set of Lights and resulting objective
+# function value
+
+def get_Coords(grd,Xdim,Ydim):
+    #this returns a coordinate grid given grid density and X and Y dimensions
+    xlb = Xdim*(1/grd)*(0.5)
+    xub = Xdim-xlb
+    ylb = xlb
+    yub = xub
+    Gridx = np.zeros((grd,grd))
+    Gridy = np.zeros((grd,grd))
+    Gridx[:,:]=np.linspace(xlb,xub,grd)
+    Gridy[:,:]=np.linspace(ylb,yub,grd)
+    Gridy = np.transpose(Gridy)
+    Coords = np.zeros((grd,grd,2))
+    Coords[:,:,0] = Gridx
+    Coords[:,:,1] = Gridy
+    return Coords
+
+def get_Imatl(Pt,Coords,theta_light):
+    # this returns the light intensity map for the given Coordinate grid and Pt
+    I_mat = np.zeros((Coords.shape[0],Coords.shape[1]))
+    I_mat_sum = np.zeros((Coords.shape[0],Coords.shape[1]))
+    for i in range(Coords.shape[0]):
+        for j in range(Coords.shape[1]):
+            Rij = np.sqrt((Coords[i,j,0]-Pt[0])**2 +(Coords[i,j,1]-Pt[1])**2+(Pt[2])**2)
+            cosAij= (Pt[2])/Rij
+            if cosAij <= theta_light:
+                I_mat[i,j] = (1/Rij**2)*cosAij
+            else:
+                I_mat[i,j] = 0
+    return I_mat
+
+def get_ObjectiveValue(Coords,LC,theta_light):
+    # This returns the objective function value and resulting Intensity Map
+    # for a list of coordinates for N lights. LC (lite coords) is shape (Nx3)
+    I_mat_sum = np.zeros((Coords.shape[0],Coords.shape[0]))
+    for L in range(LC.shape[0]):
+        Pt1 = np.array([LC[L,0],LC[L,1],LC[L,2]])
+        I_mat = get_Imatl(Pt1,Coords,theta_light)
+        I_mat_sum = I_mat_sum+I_mat   
+    Variance = np.var(I_mat_sum)
+    return Variance, I_mat_sum
+#****************************************************************************
+# The next part uses the functions with nominal values to psee if they work
+#****************************************************************************
+
+grd = 6
+N = 3
+Xdim,Ydim = 8,8
+
+Pt = np.array((4,4,8))
+Coords = get_Coords(grd,Xdim,Ydim)
+
+LC =np.matrix([(3,3,4),(6,6,4),(2,5,4)])
+Result, I_mat_sum =get_ObjectiveValue(Coords,LC,np.radians(60))
+print(Result)
+plt.contourf(I_mat_sum)
+#print(I_mat)
+#print(Coords)
