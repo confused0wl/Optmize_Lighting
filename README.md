@@ -1,7 +1,7 @@
 # Optmize_Lighting
 Artificial Lighting Optimization for Greenhouses using NLP solvers
 Growing crops in greenhouses can extend the growing season if conditions such as light,
-temperature, humidity, and CO 2 concentration, within the greenhouse remain favorable for the
+temperature, humidity, and CO2 concentration, within the greenhouse remain favorable for the
 plants. To achieve a successful harvest in such environments, it is necessary to supplement
 natural conditions with artificial means. Modern commercial greenhouses have become
 excellent at this, they are often filled with equipment to monitor and control heating, cooling,
